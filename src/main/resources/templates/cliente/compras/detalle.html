@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle Venta - Admin</title>
+    <title>Detalle Compra - TiendaSuma</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,19 +20,17 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); }
         .total { font-size: 1.3rem; font-weight: 700; color: #ffd700; text-align: right; margin-top: 20px; }
-        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; margin-right: 10px; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; margin-right: 10px; }
+        .btn-eliminar { background: rgba(244,67,54,0.8); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
     </style>
 </head>
 <body>
 <nav class="navbar">
     <a href="/home" class="logo">🛍️ TiendaSuma</a>
     <div class="nav-links">
-        <a href="/admin/productos">Productos</a>
-        <a href="/admin/categorias">Categorías</a>
-        <a href="/admin/proveedores">Proveedores</a>
-        <a href="/admin/usuarios">Usuarios</a>
-        <a href="/admin/compras">Compras</a>
-        <a href="/admin/ventas">Ventas</a>
+        <a href="/cliente/productos">Productos</a>
+        <a href="/cliente/compras">Mis Compras</a>
         <a href="/perfil">Mi Perfil</a>
         <form th:action="@{/logout}" method="post" style="display: inline;">
             <button type="submit" class="logout-btn">Cerrar Sesión</button>
@@ -42,28 +40,24 @@
 
 <div class="container">
     <div class="glass-card">
-        <h1>🧾 Detalle de Venta #<span th:text="${venta.idVenta}"></span></h1>
+        <h1>🧾 Detalle de Compra #<span th:text="${compra.idCompra}"></span></h1>
 
         <div class="info-row">
             <span class="label">Fecha:</span>
-            <span th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></span>
+            <span th:text="${#temporals.format(compra.fechaCompra, 'dd/MM/yyyy HH:mm')}"></span>
         </div>
         <div class="info-row">
-            <span class="label">Cliente ID:</span>
-            <span th:text="${venta.usuariosIdUsuario}"></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Vendedor ID:</span>
-            <span th:text="${venta.vendedorIdUsuario}"></span>
+            <span class="label">Total:</span>
+            <span th:text="'Q ' + ${compra.total}"></span>
         </div>
 
-        <h3 style="color: white; margin: 20px 0 10px 0;">Productos (DetalleVenta)</h3>
+        <h3 style="color: white; margin: 20px 0 10px 0;">Productos</h3>
         <table>
             <thead>
             <tr>
                 <th>Producto ID</th>
                 <th>Cantidad</th>
-                <th>Precio Unitario</th>
+                <th>Precio</th>
                 <th>Subtotal</th>
             </tr>
             </thead>
@@ -71,14 +65,18 @@
             <tr th:each="detalle : ${detalles}">
                 <td th:text="${detalle.productosIdProducto}"></td>
                 <td th:text="${detalle.cantidad}"></td>
-                <td th:text="'Q ' + ${detalle.precioUnitario}"></td>
-                <td th:text="'Q ' + ${detalle.precioUnitario * detalle.cantidad}"></td>
+                <td th:text="'Q ' + ${detalle.precioCompra}"></td>
+                <td th:text="'Q ' + ${detalle.precioCompra * detalle.cantidad}"></td>
             </tr>
             </tbody>
         </table>
-        <div class="total" th:text="'Total: Q ' + ${total}"></div>
+        <div class="total" th:text="'Total: Q ' + ${compra.total}"></div>
 
-        <a href="/admin/ventas" class="btn-back">← Volver a Ventas</a>
+        <div>
+            <a href="/cliente/compras" class="btn-back">← Volver a Mis Compras</a>
+            <a th:href="@{/cliente/compras/editar/{id}(id=${compra.idCompra})}" class="btn-editar">✏️ Editar Compra</a>
+            <a th:href="@{/cliente/compras/eliminar/{id}(id=${compra.idCompra})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta compra?')">🗑️ Eliminar Compra</a>
+        </div>
     </div>
 </div>
 </body>

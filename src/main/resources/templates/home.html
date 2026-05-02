@@ -21,7 +21,7 @@
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .logo { color: white; font-size: 1.8rem; font-weight: 600; }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
         .user-info { display: flex; align-items: center; gap: 20px; }
         .user-name { color: white; font-weight: 500; }
         .badge-role { background: rgba(255, 255, 255, 0.3); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; color: white; }
@@ -37,14 +37,18 @@
         .dashboard-icon { font-size: 3rem; margin-bottom: 15px; }
         .dashboard-title { color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; }
         .dashboard-desc { color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; }
+        .admin-badge { background: rgba(244,67,54,0.5); display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 10px; }
+        .vendedor-badge { background: rgba(255,193,7,0.5); display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 10px; }
+        .cliente-badge { background: rgba(76,175,80,0.5); display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 10px; }
     </style>
 </head>
 <body>
 <nav class="navbar">
-    <div class="logo">🛍️ TiendaSuma</div>
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
     <div class="user-info">
         <span class="user-name" th:text="'Hola, ' + ${nombreCompleto}"></span>
         <span class="badge-role" th:text="${rol}"></span>
+        <a href="/perfil" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 10px;">Mi Perfil</a>
         <form th:action="@{/logout}" method="post" style="display: inline;">
             <button type="submit" class="logout-btn">Cerrar Sesión</button>
         </form>
@@ -54,77 +58,76 @@
 <div class="container">
     <div class="glass-card">
         <h2>📊 Dashboard</h2>
-        <div class="welcome-text" th:text="'Bienvenido/a, ' + ${nombreCompleto} + '! Has iniciado sesión correctamente.'"></div>
+        <div class="welcome-text" th:text="'Bienvenido/a, ' + ${nombreCompleto} + '! Has iniciado sesión como ' + ${rol} + '.'"></div>
 
         <div class="dashboard-grid">
-            <!-- ==================== CLIENTE ==================== -->
-            <a href="/productos" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
-                <div class="dashboard-icon">📦</div>
-                <div class="dashboard-title">Ver Productos</div>
-                <div class="dashboard-desc">Explora nuestro catálogo de productos</div>
-            </a>
-            <a href="/compras/nueva" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
-                <div class="dashboard-icon">🛒</div>
-                <div class="dashboard-title">Realizar Compra</div>
-                <div class="dashboard-desc">Compra productos a proveedores</div>
-            </a>
-            <a href="/compras/mis-compras" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
-                <div class="dashboard-icon">📋</div>
-                <div class="dashboard-title">Mis Compras</div>
-                <div class="dashboard-desc">Historial de tus compras</div>
-            </a>
-
-            <!-- ==================== VENDEDOR ==================== -->
-            <a href="/productos" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
-                <div class="dashboard-icon">📦</div>
-                <div class="dashboard-title">Productos</div>
-                <div class="dashboard-desc">Gestionar inventario</div>
-            </a>
-            <a href="/ventas/nueva" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
-                <div class="dashboard-icon">💰</div>
-                <div class="dashboard-title">Registrar Venta</div>
-                <div class="dashboard-desc">Realizar una nueva venta</div>
-            </a>
-            <a href="/ventas" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
-                <div class="dashboard-icon">📊</div>
-                <div class="dashboard-title">Mis Ventas</div>
-                <div class="dashboard-desc">Ver historial de ventas</div>
-            </a>
-
             <!-- ==================== ADMIN ==================== -->
             <a href="/admin/productos" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">📦</div>
-                <div class="dashboard-title">Productos</div>
-                <div class="dashboard-desc">CRUD completo de productos</div>
+                <div class="dashboard-title">Productos <span class="admin-badge">CRUD</span></div>
+                <div class="dashboard-desc">Gestionar productos</div>
             </a>
             <a href="/admin/categorias" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">🏷️</div>
-                <div class="dashboard-title">Categorías</div>
+                <div class="dashboard-title">Categorías <span class="admin-badge">CRUD</span></div>
                 <div class="dashboard-desc">Gestionar categorías</div>
             </a>
             <a href="/admin/proveedores" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">🚚</div>
-                <div class="dashboard-title">Proveedores</div>
+                <div class="dashboard-title">Proveedores <span class="admin-badge">CRUD</span></div>
                 <div class="dashboard-desc">Gestionar proveedores</div>
             </a>
             <a href="/admin/usuarios" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">👥</div>
-                <div class="dashboard-title">Usuarios</div>
+                <div class="dashboard-title">Usuarios <span class="admin-badge">CRUD</span></div>
                 <div class="dashboard-desc">Gestionar usuarios y roles</div>
             </a>
             <a href="/admin/compras" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">📋</div>
-                <div class="dashboard-title">Compras</div>
-                <div class="dashboard-desc">Ver todas las compras</div>
+                <div class="dashboard-title">Compras <span class="admin-badge">CRUD</span></div>
+                <div class="dashboard-desc">Gestionar compras</div>
             </a>
             <a href="/admin/ventas" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">💰</div>
-                <div class="dashboard-title">Ventas</div>
-                <div class="dashboard-desc">Reporte general de ventas</div>
+                <div class="dashboard-title">Ventas <span class="admin-badge">CRUD</span></div>
+                <div class="dashboard-desc">Gestionar ventas</div>
             </a>
 
-            <!-- ==================== COMÚN para todos ==================== -->
-            <a href="/perfil" class="dashboard-item" th:if="${rol == 'ADMIN' or rol == 'VENDEDOR' or rol == 'CLIENTE'}">
+            <!-- VENDEDOR -->
+            <a href="/vendedor/productos" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
+                <div class="dashboard-icon">📦</div>
+                <div class="dashboard-title">Productos</div>
+                <div class="dashboard-desc">Ver inventario</div>
+            </a>
+            <a href="/vendedor/ventas/nueva" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
+                <div class="dashboard-icon">➕</div>
+                <div class="dashboard-title">Nueva Venta</div>
+                <div class="dashboard-desc">Registrar una venta</div>
+            </a>
+            <a href="/vendedor/ventas" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
+                <div class="dashboard-icon">💰</div>
+                <div class="dashboard-title">Mis Ventas</div>
+                <div class="dashboard-desc">Ver historial de ventas</div>
+            </a>
+
+            <!-- CLIENTE -->
+            <a href="/cliente/productos" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
+                <div class="dashboard-icon">📦</div>
+                <div class="dashboard-title">Ver Productos</div>
+                <div class="dashboard-desc">Explora nuestro catálogo de productos</div>
+            </a>
+            <a href="/cliente/compras/nueva" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
+                <div class="dashboard-icon">🛒</div>
+                <div class="dashboard-title">Nueva Compra</div>
+                <div class="dashboard-desc">Realizar una compra</div>
+            </a>
+            <a href="/cliente/compras" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
+                <div class="dashboard-icon">📋</div>
+                <div class="dashboard-title">Mis Compras</div>
+                <div class="dashboard-desc">Historial de tus compras</div>
+            </a>
+            <!-- ==================== COMÚN ==================== -->
+            <a href="/perfil" class="dashboard-item">
                 <div class="dashboard-icon">👤</div>
                 <div class="dashboard-title">Mi Perfil</div>
                 <div class="dashboard-desc">Ver y editar tu información</div>

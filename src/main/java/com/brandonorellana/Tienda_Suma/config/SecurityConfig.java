@@ -22,19 +22,17 @@ public class SecurityConfig {
                         // Rutas públicas
                         .requestMatchers("/", "/login", "/registro", "/registro/**", "/css/**", "/js/**", "/img/**").permitAll()
 
-                        // Rutas solo ADMIN
+                        // ========== RUTAS PARA ADMIN ==========
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // Rutas para ADMIN y VENDEDOR
-                        .requestMatchers("/productos/nuevo", "/productos/guardar", "/productos/editar/**").hasAnyRole("ADMIN", "VENDEDOR")
-                        .requestMatchers("/ventas/nueva", "/ventas/guardar").hasAnyRole("ADMIN", "VENDEDOR")
-                        .requestMatchers("/ventas").hasAnyRole("ADMIN", "VENDEDOR")
+                        // ========== RUTAS PARA VENDEDOR ==========
+                        .requestMatchers("/vendedor/**").hasRole("VENDEDOR")
 
-                        // Rutas para CLIENTE y ADMIN
-                        .requestMatchers("/compras/**").hasAnyRole("CLIENTE", "ADMIN")
+                        // ========== RUTAS PARA CLIENTE ==========
+                        .requestMatchers("/cliente/**").hasRole("CLIENTE")
 
-                        // Rutas para todos los autenticados
-                        .requestMatchers("/home", "/productos", "/productos/detalle/**", "/ventas/detalle/**", "/perfil/**").authenticated()
+                        // ========== RUTAS COMPARTIDAS (todos autenticados) ==========
+                        .requestMatchers("/home", "/perfil", "/perfil/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

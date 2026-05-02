@@ -73,4 +73,9 @@ public class VentasServiceImpl implements VentasService {
     public void eliminar(Integer id) {
         ventaRepository.deleteById(id);
     }
+
+    @Override
+    public List<Ventas> buscarPorVendedor(Integer idVendedor) {
+        return ventaRepository.findByVendedorIdUsuario(idVendedor);
+    }
 }

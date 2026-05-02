@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Producto - TiendaSuma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .navbar { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .logout-btn { background: rgba(255,68,68,0.7); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
+        h1 { color: white; margin-bottom: 30px; }
+        .info-row { margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 15px; color: white; }
+        .label { font-weight: 600; font-size: 1.1rem; margin-bottom: 5px; color: #ffd700; }
+        .value { font-size: 1.2rem; }
+        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
+    <div class="nav-links">
+        <a href="/vendedor/productos">Productos</a>
+        <a href="/vendedor/ventas">Mis Ventas</a>
+        <a href="/perfil">Mi Perfil</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h1>📦 Detalle del Producto</h1>
+
+        <div class="info-row">
+            <div class="label">Nombre:</div>
+            <div class="value" th:text="${producto.nombreProducto}"></div>
+        </div>
+        <div class="info-row">
+            <div class="label">Descripción:</div>
+            <div class="value" th:text="${producto.descripcion != null ? producto.descripcion : 'Sin descripción'}"></div>
+        </div>
+        <div class="info-row">
+            <div class="label">Precio:</div>
+            <div class="value" th:text="'Q ' + ${producto.precio}"></div>
+        </div>
+        <div class="info-row">
+            <div class="label">Stock disponible:</div>
+            <div class="value" th:text="${producto.stock} + ' unidades'"></div>
+        </div>
+
+        <a href="/vendedor/productos" class="btn-back">← Volver a Productos</a>
+    </div>
+</div>
+</body>
+</html>

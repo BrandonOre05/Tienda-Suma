@@ -14,4 +14,5 @@ public interface VentasService {
     void registrarVenta(Ventas venta, List<DetalleVenta> detalles);
     BigDecimal calcularTotalVenta(Integer idVenta);
     void eliminar(Integer id);
+    List<Ventas> buscarPorVendedor(Integer idVendedor);
 }

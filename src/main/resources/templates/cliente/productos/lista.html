@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos - TiendaSuma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .navbar { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .logout-btn { background: rgba(255,68,68,0.7); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
+        h2 { color: white; margin-bottom: 20px; }
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; padding: 12px; border: none; border-radius: 10px; }
+        .search-bar button { padding: 12px 25px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .producto-card { background: rgba(255,255,255,0.15); border-radius: 15px; padding: 20px; transition: transform 0.3s; }
+        .producto-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.25); }
+        .producto-nombre { color: white; font-size: 1.2rem; font-weight: 600; }
+        .producto-precio { color: #ffd700; font-size: 1.3rem; margin: 10px 0; }
+        .producto-stock { color: rgba(255,255,255,0.7); font-size: 0.85rem; }
+        .producto-desc { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 10px 0; }
+        .btn-ver { background: rgba(33,150,243,0.8); color: white; padding: 8px 15px; border-radius: 8px; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
+    <div class="nav-links">
+        <a href="/cliente/productos">Productos</a>
+        <a href="/cliente/compras">Mis Compras</a>
+        <a href="/perfil">Mi Perfil</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h2>📦 Nuestros Productos</h2>
+
+        <form method="get" class="search-bar">
+            <input type="text" name="search" placeholder="Buscar productos por nombre o descripción..." th:value="${search}">
+            <button type="submit">🔍 Buscar</button>
+        </form>
+
+        <div class="productos-grid">
+            <div class="producto-card" th:each="producto : ${productos}">
+                <div class="producto-nombre" th:text="${producto.nombreProducto}"></div>
+                <div class="producto-precio" th:text="'Q ' + ${producto.precio}"></div>
+                <div class="producto-stock" th:text="'Stock: ' + ${producto.stock} + ' unidades'"></div>
+                <div class="producto-desc" th:text="${producto.descripcion != null ? producto.descripcion : 'Sin descripción'}"></div>
+                <div>
+                    <a th:href="@{/cliente/productos/detalle/{id}(id=${producto.idProducto})}" class="btn-ver">Ver Detalle</a>
+                </div>
+            </div>
+        </div>
+
+        <p th:if="${#lists.isEmpty(productos)}" style="color: white; text-align: center; margin-top: 30px;">No hay productos disponibles.</p>
+    </div>
+</div>
+</body>
+</html>

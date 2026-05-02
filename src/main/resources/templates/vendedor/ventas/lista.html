@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Administrar Ventas - TiendaSuma</title>
+    <title>Mis Ventas - TiendaSuma</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,25 +14,23 @@
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
         h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76,175,80,0.8); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .btn-nuevo:hover { background: rgba(76,175,80,1); }
         table { width: 100%; border-collapse: collapse; color: white; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); font-weight: 600; }
         .btn-ver { background: rgba(33,150,243,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
         .btn-eliminar { background: rgba(244,67,54,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; display: inline-block; }
         .alert-success { background: rgba(76,175,80,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
-        .alert-error { background: rgba(244,67,54,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 <nav class="navbar">
     <a href="/home" class="logo">🛍️ TiendaSuma</a>
     <div class="nav-links">
-        <a href="/admin/productos">Productos</a>
-        <a href="/admin/categorias">Categorías</a>
-        <a href="/admin/proveedores">Proveedores</a>
-        <a href="/admin/usuarios">Usuarios</a>
-        <a href="/admin/compras">Compras</a>
-        <a href="/admin/ventas">Ventas</a>
+        <a href="/vendedor/productos">Productos</a>
+        <a href="/vendedor/ventas">Mis Ventas</a>
         <a href="/perfil">Mi Perfil</a>
         <form th:action="@{/logout}" method="post" style="display: inline;">
             <button type="submit" class="logout-btn">Cerrar Sesión</button>
@@ -42,40 +40,40 @@
 
 <div class="container">
     <div class="glass-card">
-        <h2>💰 Administrar Ventas</h2>
+        <h2>💰 Mis Ventas</h2>
 
         <div th:if="${success}" class="alert-success" th:text="${success}"></div>
-        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
 
-        <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Las ventas son registradas por los vendedores desde el módulo de ventas.</p>
+        <a href="/vendedor/ventas/nueva" class="btn-nuevo">+ Nueva Venta</a>
 
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Total</th>
-                <th>Cliente ID</th>
-                <th>Vendedor ID</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="venta : ${ventas}">
-                <td th:text="${venta.idVenta}"></td>
-                <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="'Q ' + ${venta.total}"></td>
-                <td th:text="${venta.usuariosIdUsuario}"></td>
-                <td th:text="${venta.vendedorIdUsuario}"></td>
-                <td>
-                    <a th:href="@{/admin/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver Detalle</a>
-                    <a th:href="@{/admin/ventas/eliminar/{id}(id=${venta.idVenta})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta venta?')">Eliminar</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div th:if="${not #lists.isEmpty(ventas)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Cliente ID</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="venta : ${ventas}">
+                    <td th:text="${venta.idVenta}"></td>
+                    <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="'Q ' + ${venta.total}"></td>
+                    <td th:text="${venta.usuariosIdUsuario}"></td>
+                    <td>
+                        <a th:href="@{/vendedor/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver</a>
+                        <a th:href="@{/vendedor/ventas/editar/{id}(id=${venta.idVenta})}" class="btn-editar">Editar</a>
+                        <a th:href="@{/vendedor/ventas/eliminar/{id}(id=${venta.idVenta})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta venta?')">Eliminar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <p th:if="${#lists.isEmpty(ventas)}" style="color: white; text-align: center; margin-top: 30px;">No hay ventas registradas.</p>
+        <p th:if="${#lists.isEmpty(ventas)}" style="color: white; text-align: center; margin-top: 30px;">No has realizado ventas aún. <a href="/vendedor/ventas/nueva" style="color: #ffd700;">¡Registrar primera venta!</a></p>
     </div>
 </div>
 </body>
