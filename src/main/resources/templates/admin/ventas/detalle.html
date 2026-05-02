@@ -20,7 +20,8 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); }
         .total { font-size: 1.3rem; font-weight: 700; color: #ffd700; text-align: right; margin-top: 20px; }
-        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; margin-right: 10px; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -78,7 +79,10 @@
         </table>
         <div class="total" th:text="'Total: Q ' + ${total}"></div>
 
-        <a href="/admin/ventas" class="btn-back">← Volver a Ventas</a>
+        <div>
+            <a href="/admin/ventas" class="btn-back">← Volver a Ventas</a>
+            <a th:href="@{/admin/ventas/editar/{id}(id=${venta.idVenta})}" class="btn-editar">✏️ Editar Venta</a>
+        </div>
     </div>
 </div>
 </body>

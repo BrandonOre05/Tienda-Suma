@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle Venta - Admin</title>
+    <title>Detalle Compra - Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,7 +20,8 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); }
         .total { font-size: 1.3rem; font-weight: 700; color: #ffd700; text-align: right; margin-top: 20px; }
-        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .btn-back { background: rgba(255,255,255,0.3); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; margin-right: 10px; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -42,28 +43,32 @@
 
 <div class="container">
     <div class="glass-card">
-        <h1>🧾 Detalle de Venta #<span th:text="${venta.idVenta}"></span></h1>
+        <h1>🧾 Detalle de Compra #<span th:text="${compra.idCompra}"></span></h1>
 
         <div class="info-row">
             <span class="label">Fecha:</span>
-            <span th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></span>
+            <span th:text="${#temporals.format(compra.fechaCompra, 'dd/MM/yyyy HH:mm')}"></span>
         </div>
         <div class="info-row">
-            <span class="label">Cliente ID:</span>
-            <span th:text="${venta.usuariosIdUsuario}"></span>
+            <span class="label">Proveedor ID:</span>
+            <span th:text="${compra.proveedoresIdProveedor}"></span>
         </div>
         <div class="info-row">
-            <span class="label">Vendedor ID:</span>
-            <span th:text="${venta.vendedorIdUsuario}"></span>
+            <span class="label">Usuario ID (Cliente):</span>
+            <span th:text="${compra.usuariosIdUsuario}"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">N° Factura:</span>
+            <span th:text="${compra.facturaNumero != null ? compra.facturaNumero : 'No registrada'}"></span>
         </div>
 
-        <h3 style="color: white; margin: 20px 0 10px 0;">Productos (DetalleVenta)</h3>
+        <h3 style="color: white; margin: 20px 0 10px 0;">Productos (DetalleCompra)</h3>
         <table>
             <thead>
             <tr>
                 <th>Producto ID</th>
                 <th>Cantidad</th>
-                <th>Precio Unitario</th>
+                <th>Precio Compra</th>
                 <th>Subtotal</th>
             </tr>
             </thead>
@@ -71,14 +76,17 @@
             <tr th:each="detalle : ${detalles}">
                 <td th:text="${detalle.productosIdProducto}"></td>
                 <td th:text="${detalle.cantidad}"></td>
-                <td th:text="'Q ' + ${detalle.precioUnitario}"></td>
-                <td th:text="'Q ' + ${detalle.precioUnitario * detalle.cantidad}"></td>
+                <td th:text="'Q ' + ${detalle.precioCompra}"></td>
+                <td th:text="'Q ' + ${detalle.precioCompra * detalle.cantidad}"></td>
             </tr>
             </tbody>
         </table>
-        <div class="total" th:text="'Total: Q ' + ${total}"></div>
+        <div class="total" th:text="'Total: Q ' + ${compra.total}"></div>
 
-        <a href="/admin/ventas" class="btn-back">← Volver a Ventas</a>
+        <div>
+            <a href="/admin/compras" class="btn-back">← Volver a Compras</a>
+            <a th:href="@{/admin/compras/editar/{id}(id=${compra.idCompra})}" class="btn-editar">✏️ Editar Compra</a>
+        </div>
     </div>
 </div>
 </body>

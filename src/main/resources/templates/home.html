@@ -43,7 +43,7 @@
 <nav class="navbar">
     <div class="logo">🛍️ TiendaSuma</div>
     <div class="user-info">
-        <span class="user-name" th:text="'Hola, ' + ${username}"></span>
+        <span class="user-name" th:text="'Hola, ' + ${nombreCompleto}"></span>
         <span class="badge-role" th:text="${rol}"></span>
         <form th:action="@{/logout}" method="post" style="display: inline;">
             <button type="submit" class="logout-btn">Cerrar Sesión</button>
@@ -54,10 +54,10 @@
 <div class="container">
     <div class="glass-card">
         <h2>📊 Dashboard</h2>
-        <div class="welcome-text" th:text="'Bienvenido/a, ' + ${username} + '! Has iniciado sesión correctamente.'"></div>
+        <div class="welcome-text" th:text="'Bienvenido/a, ' + ${nombreCompleto} + '! Has iniciado sesión correctamente.'"></div>
 
         <div class="dashboard-grid">
-            <!-- CLIENTE -->
+            <!-- ==================== CLIENTE ==================== -->
             <a href="/productos" class="dashboard-item" th:if="${rol == 'CLIENTE'}">
                 <div class="dashboard-icon">📦</div>
                 <div class="dashboard-title">Ver Productos</div>
@@ -74,7 +74,7 @@
                 <div class="dashboard-desc">Historial de tus compras</div>
             </a>
 
-            <!-- VENDEDOR -->
+            <!-- ==================== VENDEDOR ==================== -->
             <a href="/productos" class="dashboard-item" th:if="${rol == 'VENDEDOR'}">
                 <div class="dashboard-icon">📦</div>
                 <div class="dashboard-title">Productos</div>
@@ -91,7 +91,7 @@
                 <div class="dashboard-desc">Ver historial de ventas</div>
             </a>
 
-            <!-- ADMIN -->
+            <!-- ==================== ADMIN ==================== -->
             <a href="/admin/productos" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">📦</div>
                 <div class="dashboard-title">Productos</div>
@@ -112,22 +112,22 @@
                 <div class="dashboard-title">Usuarios</div>
                 <div class="dashboard-desc">Gestionar usuarios y roles</div>
             </a>
-            <a href="/ventas" class="dashboard-item" th:if="${rol == 'ADMIN'}">
-                <div class="dashboard-icon">📊</div>
-                <div class="dashboard-title">Todas las Ventas</div>
-                <div class="dashboard-desc">Reporte general de ventas</div>
-            </a>
-            <a href="/compras/mis-compras" class="dashboard-item" th:if="${rol == 'ADMIN'}">
+            <a href="/admin/compras" class="dashboard-item" th:if="${rol == 'ADMIN'}">
                 <div class="dashboard-icon">📋</div>
                 <div class="dashboard-title">Compras</div>
                 <div class="dashboard-desc">Ver todas las compras</div>
             </a>
+            <a href="/admin/ventas" class="dashboard-item" th:if="${rol == 'ADMIN'}">
+                <div class="dashboard-icon">💰</div>
+                <div class="dashboard-title">Ventas</div>
+                <div class="dashboard-desc">Reporte general de ventas</div>
+            </a>
 
-            <!-- COMÚN para todos -->
-            <a href="/productos" class="dashboard-item" th:if="${rol == 'ADMIN' or rol == 'VENDEDOR' or rol == 'CLIENTE'}">
+            <!-- ==================== COMÚN para todos ==================== -->
+            <a href="/perfil" class="dashboard-item" th:if="${rol == 'ADMIN' or rol == 'VENDEDOR' or rol == 'CLIENTE'}">
                 <div class="dashboard-icon">👤</div>
-                <div th:href="@{/perfil.html}" class="dashboard-title">Mi Perfil</div>
-                <div class="dashboard-desc">Ver tu información</div>
+                <div class="dashboard-title">Mi Perfil</div>
+                <div class="dashboard-desc">Ver y editar tu información</div>
             </a>
         </div>
     </div>

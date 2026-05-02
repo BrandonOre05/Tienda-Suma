@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Administrar Ventas - TiendaSuma</title>
+    <title>Administrar Compras - TiendaSuma</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,10 +14,13 @@
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
         h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76,175,80,0.8); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .btn-nuevo:hover { background: rgba(76,175,80,1); }
         table { width: 100%; border-collapse: collapse; color: white; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); font-weight: 600; }
         .btn-ver { background: rgba(33,150,243,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
         .btn-eliminar { background: rgba(244,67,54,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; display: inline-block; }
         .alert-success { background: rgba(76,175,80,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
         .alert-error { background: rgba(244,67,54,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
@@ -42,12 +45,12 @@
 
 <div class="container">
     <div class="glass-card">
-        <h2>💰 Administrar Ventas</h2>
+        <h2>📋 Administrar Compras</h2>
 
         <div th:if="${success}" class="alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert-error" th:text="${error}"></div>
 
-        <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Las ventas son registradas por los vendedores desde el módulo de ventas.</p>
+        <a href="/admin/compras/nueva" class="btn-nuevo">+ Nueva Compra</a>
 
         <table>
             <thead>
@@ -55,27 +58,30 @@
                 <th>ID</th>
                 <th>Fecha</th>
                 <th>Total</th>
-                <th>Cliente ID</th>
-                <th>Vendedor ID</th>
+                <th>Proveedor ID</th>
+                <th>Usuario ID</th>
+                <th>Factura</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="venta : ${ventas}">
-                <td th:text="${venta.idVenta}"></td>
-                <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="'Q ' + ${venta.total}"></td>
-                <td th:text="${venta.usuariosIdUsuario}"></td>
-                <td th:text="${venta.vendedorIdUsuario}"></td>
+            <tr th:each="compra : ${compras}">
+                <td th:text="${compra.idCompra}"></td>
+                <td th:text="${#temporals.format(compra.fechaCompra, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="'Q ' + ${compra.total}"></td>
+                <td th:text="${compra.proveedoresIdProveedor}"></td>
+                <td th:text="${compra.usuariosIdUsuario}"></td>
+                <td th:text="${compra.facturaNumero != null ? compra.facturaNumero : 'N/A'}"></td>
                 <td>
-                    <a th:href="@{/admin/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver Detalle</a>
-                    <a th:href="@{/admin/ventas/eliminar/{id}(id=${venta.idVenta})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta venta?')">Eliminar</a>
+                    <a th:href="@{/admin/compras/detalle/{id}(id=${compra.idCompra})}" class="btn-ver">Ver</a>
+                    <a th:href="@{/admin/compras/editar/{id}(id=${compra.idCompra})}" class="btn-editar">Editar</a>
+                    <a th:href="@{/admin/compras/eliminar/{id}(id=${compra.idCompra})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta compra?')">Eliminar</a>
                 </td>
             </tr>
             </tbody>
         </table>
 
-        <p th:if="${#lists.isEmpty(ventas)}" style="color: white; text-align: center; margin-top: 30px;">No hay ventas registradas.</p>
+        <p th:if="${#lists.isEmpty(compras)}" style="color: white; text-align: center; margin-top: 30px;">No hay compras registradas.</p>
     </div>
 </div>
 </body>

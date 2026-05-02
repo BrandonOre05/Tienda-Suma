@@ -14,10 +14,13 @@
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
         h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76,175,80,0.8); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .btn-nuevo:hover { background: rgba(76,175,80,1); }
         table { width: 100%; border-collapse: collapse; color: white; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
         th { background: rgba(255,255,255,0.1); font-weight: 600; }
         .btn-ver { background: rgba(33,150,243,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
+        .btn-editar { background: rgba(255,193,7,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
         .btn-eliminar { background: rgba(244,67,54,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; display: inline-block; }
         .alert-success { background: rgba(76,175,80,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
         .alert-error { background: rgba(244,67,54,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
@@ -47,7 +50,7 @@
         <div th:if="${success}" class="alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert-error" th:text="${error}"></div>
 
-        <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Las ventas son registradas por los vendedores desde el módulo de ventas.</p>
+        <a href="/admin/ventas/nueva" class="btn-nuevo">+ Nueva Venta</a>
 
         <table>
             <thead>
@@ -68,7 +71,8 @@
                 <td th:text="${venta.usuariosIdUsuario}"></td>
                 <td th:text="${venta.vendedorIdUsuario}"></td>
                 <td>
-                    <a th:href="@{/admin/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver Detalle</a>
+                    <a th:href="@{/admin/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver</a>
+                    <a th:href="@{/admin/ventas/editar/{id}(id=${venta.idVenta})}" class="btn-editar">Editar</a>
                     <a th:href="@{/admin/ventas/eliminar/{id}(id=${venta.idVenta})}" class="btn-eliminar" onclick="return confirm('¿Eliminar esta venta?')">Eliminar</a>
                 </td>
             </tr>

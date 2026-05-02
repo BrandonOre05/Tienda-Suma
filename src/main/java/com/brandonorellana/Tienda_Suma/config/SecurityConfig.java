@@ -24,22 +24,17 @@ public class SecurityConfig {
 
                         // Rutas solo ADMIN
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/categorias/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/proveedores/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/usuarios/**").hasRole("ADMIN")
 
                         // Rutas para ADMIN y VENDEDOR
                         .requestMatchers("/productos/nuevo", "/productos/guardar", "/productos/editar/**").hasAnyRole("ADMIN", "VENDEDOR")
                         .requestMatchers("/ventas/nueva", "/ventas/guardar").hasAnyRole("ADMIN", "VENDEDOR")
-
-                        // Rutas solo VENDEDOR (ver sus ventas)
                         .requestMatchers("/ventas").hasAnyRole("ADMIN", "VENDEDOR")
 
-                        // Rutas solo CLIENTE
-                        .requestMatchers("/compras/**").hasRole("CLIENTE")
+                        // Rutas para CLIENTE y ADMIN
+                        .requestMatchers("/compras/**").hasAnyRole("CLIENTE", "ADMIN")
 
                         // Rutas para todos los autenticados
-                        .requestMatchers("/home", "/productos", "/productos/detalle/**", "/ventas/detalle/**").authenticated()
+                        .requestMatchers("/home", "/productos", "/productos/detalle/**", "/ventas/detalle/**", "/perfil/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

@@ -4,7 +4,6 @@ import com.brandonorellana.Tienda_Suma.entity.DetalleVenta;
 import com.brandonorellana.Tienda_Suma.entity.Ventas;
 import com.brandonorellana.Tienda_Suma.repository.DetalleVentaRepository;
 import com.brandonorellana.Tienda_Suma.repository.VentasRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -45,6 +44,7 @@ public class VentasServiceImpl implements VentasService {
             BigDecimal subtotal = detalle.getPrecioUnitario()
                     .multiply(BigDecimal.valueOf(detalle.getCantidad()));
             total = total.add(subtotal);
+            // RESTA stock (cantidad positiva)
             productoService.descontarStock(detalle.getProductosIdProducto(), detalle.getCantidad());
         }
         venta.setTotal(total);

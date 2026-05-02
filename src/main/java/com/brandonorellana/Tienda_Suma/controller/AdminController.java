@@ -1,20 +1,19 @@
 package com.brandonorellana.Tienda_Suma.controller;
 
-import com.brandonorellana.Tienda_Suma.entity.Categorias;
-import com.brandonorellana.Tienda_Suma.entity.Productos;
-import com.brandonorellana.Tienda_Suma.entity.Proveedores;
-import com.brandonorellana.Tienda_Suma.entity.Rol;
-import com.brandonorellana.Tienda_Suma.entity.Usuarios;
-import com.brandonorellana.Tienda_Suma.service.CategoriasService;
-import com.brandonorellana.Tienda_Suma.service.ProductosService;
-import com.brandonorellana.Tienda_Suma.service.ProveedoresService;
-import com.brandonorellana.Tienda_Suma.service.UsuariosService;
+import com.brandonorellana.Tienda_Suma.entity.*;
+import com.brandonorellana.Tienda_Suma.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -31,6 +30,18 @@ public class AdminController {
 
     @Autowired
     private ProductosService productosService;
+
+    @Autowired
+    private ComprasService comprasService;
+
+    @Autowired
+    private DetalleCompraService detalleCompraService;
+
+    @Autowired
+    private VentasService ventasService;
+
+    @Autowired
+    private DetalleVentaService detalleVentaService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -217,7 +228,6 @@ public class AdminController {
                                       RedirectAttributes redirectAttributes) {
         try {
             if (idUsuario != null && idUsuario > 0) {
-                // Actualizar existente
                 Usuarios existing = usuariosService.buscarPorId(idUsuario).get();
                 existing.setNombre(usuario.getNombre());
                 existing.setApellido(usuario.getApellido());
@@ -230,7 +240,6 @@ public class AdminController {
                 }
                 usuariosService.actualizar(existing);
             } else {
-                // Crear nuevo
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
                 usuario.setEstado(true);
                 usuariosService.crear(usuario);
@@ -247,5 +256,270 @@ public class AdminController {
         usuariosService.eliminar(id);
         redirectAttributes.addFlashAttribute("success", "Usuario eliminado exitosamente");
         return "redirect:/admin/usuarios";
+    }
+
+    // ============================================================
+    // ====================== COMPRAS CRUD ======================
+    // ============================================================
+
+    @GetMapping("/compras")
+    public String listarComprasAdmin(Model model) {
+        model.addAttribute("compras", comprasService.listarTodos());
+        return "admin/compras/lista";
+    }
+
+    @GetMapping("/compras/nueva")
+    public String nuevaCompraAdmin(Model model) {
+        model.addAttribute("compra", new Compras());
+        model.addAttribute("proveedores", proveedoresService.listarTodos());
+        model.addAttribute("productos", productosService.listarTodos());
+        model.addAttribute("usuarios", usuariosService.listarTodos());
+        return "admin/compras/formulario";
+    }
+
+    @GetMapping("/compras/editar/{id}")
+    public String editarCompraAdmin(@PathVariable Integer id, Model model) {
+        Compras compra = comprasService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada"));
+        List<DetalleCompra> detalles = detalleCompraService.buscarPorCompraId(id);
+        model.addAttribute("compra", compra);
+        model.addAttribute("detalles", detalles);
+        model.addAttribute("proveedores", proveedoresService.listarTodos());
+        model.addAttribute("productos", productosService.listarTodos());
+        model.addAttribute("usuarios", usuariosService.listarTodos());
+        return "admin/compras/formulario";
+    }
+
+    @PostMapping("/compras/guardar")
+    public String guardarCompraAdmin(@ModelAttribute Compras compra,
+                                     @RequestParam(required = false) Integer idCompra,
+                                     @RequestParam Map<String, String> params,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            boolean esEdicion = (idCompra != null && idCompra > 0);
+
+            if (esEdicion) {
+                compra.setIdCompra(idCompra);
+                // Si es edición, primero eliminar los detalles existentes
+                List<DetalleCompra> detallesExistentes = detalleCompraService.buscarPorCompraId(idCompra);
+                for (DetalleCompra det : detallesExistentes) {
+                    detalleCompraService.eliminar(det.getIdDetalleCompra());
+                }
+            }
+
+            List<DetalleCompra> detalles = new ArrayList<>();
+            BigDecimal total = BigDecimal.ZERO;
+
+            for (String key : params.keySet()) {
+                if (key.startsWith("producto_")) {
+                    Integer productoId = Integer.parseInt(key.substring(9));
+                    String cantidadStr = params.get(key);
+
+                    if (cantidadStr != null && !cantidadStr.isEmpty()) {
+                        Integer cantidad = Integer.parseInt(cantidadStr);
+
+                        if (cantidad > 0) {
+                            Productos producto = productosService.buscarPorId(productoId)
+                                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + productoId));
+
+                            DetalleCompra detalle = new DetalleCompra();
+                            detalle.setProductosIdProducto(productoId);
+                            detalle.setCantidad(cantidad);
+                            detalle.setPrecioCompra(producto.getPrecio());
+                            detalles.add(detalle);
+
+                            BigDecimal subtotal = producto.getPrecio()
+                                    .multiply(BigDecimal.valueOf(cantidad));
+                            total = total.add(subtotal);
+                        }
+                    }
+                }
+            }
+
+            if (detalles.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar al menos un producto");
+                return "redirect:/admin/compras" + (esEdicion ? "/editar/" + idCompra : "/nueva");
+            }
+
+            compra.setTotal(total);
+
+            // Guardar la compra y sus detalles
+            comprasService.guardar(compra, detalles);
+
+            redirectAttributes.addFlashAttribute("success", esEdicion ? "Compra actualizada exitosamente" : "Compra guardada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin/compras";
+    }
+
+    @GetMapping("/compras/detalle/{id}")
+    public String verDetalleCompraAdmin(@PathVariable Integer id, Model model) {
+        Compras compra = comprasService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada"));
+        List<DetalleCompra> detalles = detalleCompraService.buscarPorCompraId(id);
+        model.addAttribute("compra", compra);
+        model.addAttribute("detalles", detalles);
+        return "admin/compras/detalle";
+    }
+
+    @GetMapping("/compras/eliminar/{id}")
+    public String eliminarCompraAdmin(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            comprasService.eliminar(id);
+            redirectAttributes.addFlashAttribute("success", "Compra eliminada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+        }
+        return "redirect:/admin/compras";
+    }
+
+    // ============================================================
+    // ====================== VENTAS CRUD ======================
+    // ============================================================
+
+    // ============================================================
+// ====================== VENTAS CRUD COMPLETO ======================
+// ============================================================
+
+    @GetMapping("/ventas")
+    public String listarVentasAdmin(Model model) {
+        model.addAttribute("ventas", ventasService.listarTodos());
+        return "admin/ventas/lista";
+    }
+
+    @GetMapping("/ventas/nueva")
+    public String nuevaVentaAdmin(Model model) {
+        model.addAttribute("venta", new Ventas());
+        model.addAttribute("productos", productosService.listarTodos());
+        model.addAttribute("clientes", usuariosService.listarTodos().stream()
+                .filter(u -> u.getRol().equals(Rol.CLIENTE))
+                .collect(Collectors.toList()));
+        model.addAttribute("vendedores", usuariosService.listarTodos().stream()
+                .filter(u -> u.getRol().equals(Rol.VENDEDOR) || u.getRol().equals(Rol.ADMIN))
+                .collect(Collectors.toList()));
+        return "admin/ventas/formulario";
+    }
+
+    @GetMapping("/ventas/editar/{id}")
+    public String editarVentaAdmin(@PathVariable Integer id, Model model) {
+        Ventas venta = ventasService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+        List<DetalleVenta> detalles = detalleVentaService.buscarPorVentaId(id);
+
+        model.addAttribute("venta", venta);
+        model.addAttribute("detalles", detalles);
+        model.addAttribute("productos", productosService.listarTodos());
+        model.addAttribute("clientes", usuariosService.listarTodos().stream()
+                .filter(u -> u.getRol().equals(Rol.CLIENTE))
+                .collect(Collectors.toList()));
+        model.addAttribute("vendedores", usuariosService.listarTodos().stream()
+                .filter(u -> u.getRol().equals(Rol.VENDEDOR) || u.getRol().equals(Rol.ADMIN))
+                .collect(Collectors.toList()));
+        return "admin/ventas/formulario";
+    }
+
+    @PostMapping("/ventas/guardar")
+    public String guardarVentaAdmin(@ModelAttribute Ventas venta,
+                                    @RequestParam(required = false) Integer idVenta,
+                                    @RequestParam Map<String, String> params,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            boolean esEdicion = (idVenta != null && idVenta > 0);
+
+            if (esEdicion) {
+                venta.setIdVenta(idVenta);
+                // Si es edición, primero eliminar los detalles existentes
+                List<DetalleVenta> detallesExistentes = detalleVentaService.buscarPorVentaId(idVenta);
+
+                // Revertir stock de los detalles existentes
+                for (DetalleVenta det : detallesExistentes) {
+                    Productos producto = productosService.buscarPorId(det.getProductosIdProducto()).get();
+                    producto.setStock(producto.getStock() + det.getCantidad()); // Devolver stock
+                    productosService.guardar(producto);
+                    detalleVentaService.eliminar(det.getIdDetalleVenta());
+                }
+            }
+
+            List<DetalleVenta> detalles = new ArrayList<>();
+            BigDecimal total = BigDecimal.ZERO;
+
+            for (String key : params.keySet()) {
+                if (key.startsWith("producto_")) {
+                    Integer productoId = Integer.parseInt(key.substring(9));
+                    String cantidadStr = params.get(key);
+
+                    if (cantidadStr != null && !cantidadStr.isEmpty()) {
+                        Integer cantidad = Integer.parseInt(cantidadStr);
+
+                        if (cantidad > 0) {
+                            Productos producto = productosService.buscarPorId(productoId)
+                                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + productoId));
+
+                            // Validar stock suficiente
+                            if (producto.getStock() < cantidad) {
+                                redirectAttributes.addFlashAttribute("error",
+                                        "Stock insuficiente para " + producto.getNombreProducto() + ". Disponible: " + producto.getStock());
+                                return "redirect:/admin/ventas" + (esEdicion ? "/editar/" + idVenta : "/nueva");
+                            }
+
+                            DetalleVenta detalle = new DetalleVenta();
+                            detalle.setProductosIdProducto(productoId);
+                            detalle.setCantidad(cantidad);
+                            detalle.setPrecioUnitario(producto.getPrecio());
+                            detalles.add(detalle);
+
+                            BigDecimal subtotal = producto.getPrecio()
+                                    .multiply(BigDecimal.valueOf(cantidad));
+                            total = total.add(subtotal);
+                        }
+                    }
+                }
+            }
+
+            if (detalles.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar al menos un producto");
+                return "redirect:/admin/ventas" + (esEdicion ? "/editar/" + idVenta : "/nueva");
+            }
+
+            venta.setTotal(total);
+            ventasService.registrarVenta(venta, detalles);
+
+            redirectAttributes.addFlashAttribute("success", esEdicion ? "Venta actualizada exitosamente" : "Venta registrada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "redirect:/admin/ventas";
+    }
+
+    @GetMapping("/ventas/detalle/{id}")
+    public String verDetalleVentaAdmin(@PathVariable Integer id, Model model) {
+        Ventas venta = ventasService.buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+        List<DetalleVenta> detalles = detalleVentaService.buscarPorVentaId(id);
+        model.addAttribute("venta", venta);
+        model.addAttribute("detalles", detalles);
+        model.addAttribute("total", ventasService.calcularTotalVenta(id));
+        return "admin/ventas/detalle";
+    }
+
+    @GetMapping("/ventas/eliminar/{id}")
+    public String eliminarVentaAdmin(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            // Revertir stock antes de eliminar
+            List<DetalleVenta> detalles = detalleVentaService.buscarPorVentaId(id);
+            for (DetalleVenta detalle : detalles) {
+                Productos producto = productosService.buscarPorId(detalle.getProductosIdProducto()).get();
+                producto.setStock(producto.getStock() + detalle.getCantidad());
+                productosService.guardar(producto);
+            }
+            ventasService.eliminar(id);
+            redirectAttributes.addFlashAttribute("success", "Venta eliminada exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+        }
+        return "redirect:/admin/ventas";
     }
 }

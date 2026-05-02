@@ -22,23 +22,28 @@ public class PerfilController {
 
     @GetMapping
     public String verPerfil(Model model, Authentication auth) {
-        Usuarios usuario = usuariosService.buscarPorEmail(auth.getName()).get();
+        Usuarios usuario = usuariosService.buscarPorEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         model.addAttribute("usuario", usuario);
         return "perfil";
     }
 
     @PostMapping("/actualizar")
-    public String actualizarPerfil(@ModelAttribute Usuarios usuarioActualizado,
+    public String actualizarPerfil(@RequestParam String nombre,
+                                   @RequestParam String apellido,
+                                   @RequestParam(required = false) String telefono,
+                                   @RequestParam(required = false) String direccion,
                                    @RequestParam(required = false) String nuevaPassword,
                                    Authentication auth,
                                    RedirectAttributes redirectAttributes) {
         try {
-            Usuarios usuarioExistente = usuariosService.buscarPorEmail(auth.getName()).get();
+            Usuarios usuarioExistente = usuariosService.buscarPorEmail(auth.getName())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            usuarioExistente.setNombre(usuarioActualizado.getNombre());
-            usuarioExistente.setApellido(usuarioActualizado.getApellido());
-            usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
-            usuarioExistente.setDireccion(usuarioActualizado.getDireccion());
+            usuarioExistente.setNombre(nombre);
+            usuarioExistente.setApellido(apellido);
+            usuarioExistente.setTelefono(telefono);
+            usuarioExistente.setDireccion(direccion);
 
             if (nuevaPassword != null && !nuevaPassword.isEmpty()) {
                 usuarioExistente.setPassword(passwordEncoder.encode(nuevaPassword));

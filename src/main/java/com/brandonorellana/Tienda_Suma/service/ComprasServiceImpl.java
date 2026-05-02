@@ -49,7 +49,8 @@ public class ComprasServiceImpl implements ComprasService {
             BigDecimal subtotal = detalle.getPrecioCompra()
                     .multiply(BigDecimal.valueOf(detalle.getCantidad()));
             total = total.add(subtotal);
-            productoService.descontarStock(detalle.getProductosIdProducto(), -detalle.getCantidad());
+            // CORREGIDO: RESTA stock (cantidad positiva)
+            productoService.descontarStock(detalle.getProductosIdProducto(), detalle.getCantidad());
         }
         compra.setTotal(total);
 
