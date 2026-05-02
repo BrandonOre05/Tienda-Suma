@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .navbar { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .logout-btn { background: rgba(255,68,68,0.7); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
+        h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76,175,80,0.8); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; color: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        th { background: rgba(255,255,255,0.1); }
+        .badge-admin { background: rgba(244,67,54,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .badge-vendedor { background: rgba(255,193,7,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .badge-cliente { background: rgba(76,175,80,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; }
+        .btn-editar { background: rgba(33,150,243,0.8); padding: 6px 12px; border-radius: 8px; text-decoration: none; color: white; margin-right: 5px; display: inline-block; }
+        .btn-eliminar { background: rgba(244,67,54,0.8); padding: 6px 12px; border-radius: 8px; text-decoration: none; color: white; display: inline-block; }
+        .alert-success { background: rgba(76,175,80,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
+    <div class="nav-links">
+        <a href="/admin/productos">Productos</a>
+        <a href="/admin/categorias">Categorías</a>
+        <a href="/admin/proveedores">Proveedores</a>
+        <a href="/admin/usuarios">Usuarios</a>
+        <a href="/ventas">Ventas</a>
+        <a href="/perfil">Mi Perfil</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h2>👥 Usuarios del Sistema</h2>
+
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+
+        <a href="/admin/usuarios/nuevo" class="btn-nuevo">+ Nuevo Usuario</a>
+
+        <table>
+            <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${usuarios}">
+                <td th:text="${user.idUsuario}"></td>
+                <td th:text="${user.nombre} + ' ' + ${user.apellido}"></td>
+                <td th:text="${user.email}"></td>
+                <td><span th:class="${'badge-' + user.rol.name().toLowerCase()}" th:text="${user.rol}"></span></td>
+                <td><span th:text="${user.estado ? 'Activo' : 'Inactivo'}"></span></td>
+                <td>
+                    <a th:href="@{/admin/usuarios/editar/{id}(id=${user.idUsuario})}" class="btn-editar">Editar</a>
+                    <a th:href="@{/admin/usuarios/eliminar/{id}(id=${user.idUsuario})}" class="btn-eliminar" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p th:if="${#lists.isEmpty(usuarios)}" style="color: white; text-align: center; margin-top: 30px;">No hay usuarios registrados.</p>
+    </div>
+</div>
+</body>
+</html>

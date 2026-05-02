@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrar Productos - TiendaSuma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .navbar { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .logout-btn { background: rgba(255,68,68,0.7); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; }
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; }
+        h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76,175,80,0.8); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; padding: 12px; border: none; border-radius: 10px; }
+        .search-bar button { padding: 12px 25px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; color: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        th { background: rgba(255,255,255,0.1); font-weight: 600; }
+        .btn-editar { background: rgba(33,150,243,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; margin-right: 5px; display: inline-block; }
+        .btn-eliminar { background: rgba(244,67,54,0.8); color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; display: inline-block; }
+        .alert-success { background: rgba(76,175,80,0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
+        .badge-activo { background: rgba(76,175,80,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: inline-block; }
+        .badge-inactivo { background: rgba(244,67,54,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: inline-block; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
+    <div class="nav-links">
+        <a href="/admin/productos">Productos</a>
+        <a href="/admin/categorias">Categorías</a>
+        <a href="/admin/proveedores">Proveedores</a>
+        <a href="/admin/usuarios">Usuarios</a>
+        <a href="/ventas">Ventas</a>
+        <a href="/perfil">Mi Perfil</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h2>📦 Administrar Productos</h2>
+
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+
+        <a href="/admin/productos/nuevo" class="btn-nuevo">+ Nuevo Producto</a>
+
+        <form method="get" class="search-bar">
+            <input type="text" name="search" placeholder="Buscar productos por nombre..." th:value="${search}">
+            <button type="submit">🔍 Buscar</button>
+        </form>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Stock Mínimo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="producto : ${productos}">
+                <td th:text="${producto.idProducto}"></td>
+                <td th:text="${producto.nombreProducto}"></td>
+                <td th:text="'Q ' + ${producto.precio}"></td>
+                <td th:text="${producto.stock}"></td>
+                <td th:text="${producto.stockMinimo}"></td>
+                <td>
+                    <span th:if="${producto.estado}" class="badge-activo">Activo</span>
+                    <span th:unless="${producto.estado}" class="badge-inactivo">Inactivo</span>
+                </td>
+                <td>
+                    <a th:href="@{/admin/productos/editar/{id}(id=${producto.idProducto})}" class="btn-editar">Editar</a>
+                    <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.idProducto})}" class="btn-eliminar" onclick="return confirm('¿Eliminar este producto?')">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p th:if="${#lists.isEmpty(productos)}" style="color: white; text-align: center; margin-top: 30px;">No hay productos registrados.</p>
+    </div>
+</div>
+</body>
+</html>

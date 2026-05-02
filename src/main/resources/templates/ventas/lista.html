@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas - TiendaSuma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .logo { color: white; font-size: 1.8rem; font-weight: 600; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 10px; transition: all 0.3s ease; }
+        .nav-links a:hover { background: rgba(255, 255, 255, 0.2); }
+        .logout-btn { background: rgba(255, 68, 68, 0.7); color: white; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; font-family: 'Poppins', sans-serif; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .glass-card { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; margin-bottom: 30px; }
+        h2 { color: white; margin-bottom: 20px; }
+        .btn-nuevo { background: rgba(76, 175, 80, 0.8); color: white; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; color: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        th { background: rgba(255, 255, 255, 0.1); font-weight: 600; }
+        .btn-ver { background: rgba(33, 150, 243, 0.8); color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 0.85rem; margin-right: 5px; }
+        .btn-eliminar { background: rgba(244, 67, 54, 0.8); color: white; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 0.85rem; }
+        .alert-success { background: rgba(76, 175, 80, 0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
+        .alert-error { background: rgba(244, 67, 54, 0.9); color: white; padding: 12px; border-radius: 10px; margin-bottom: 20px; }
+        .badge-admin { background: rgba(244, 67, 54, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .badge-vendedor { background: rgba(255, 193, 7, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .badge-cliente { background: rgba(76, 175, 80, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="/home" class="logo">🛍️ TiendaSuma</a>
+    <div class="nav-links">
+        <a href="/productos">Productos</a>
+        <a href="/ventas" th:if="${rol == 'ADMIN' or rol == 'VENDEDOR'}">Ventas</a>
+        <a href="/admin/categorias" th:if="${rol == 'ADMIN'}">Categorías</a>
+        <a href="/admin/proveedores" th:if="${rol == 'ADMIN'}">Proveedores</a>
+        <a href="/admin/usuarios" th:if="${rol == 'ADMIN'}">Usuarios</a>
+        <a href="/compras/cliente" th:if="${rol == 'CLIENTE'}">Mis compras</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h2>📊 Ventas</h2>
+
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+        <a th:href="@{/ventas/nueva}" class="btn-nuevo" th:if="${rol == 'ADMIN' or rol == 'VENDEDOR'}">+ Nueva Venta</a>
+
+        <table th:if="${not #lists.isEmpty(ventas)}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="venta : ${ventas}">
+                <td th:text="${venta.idVenta}"></td>
+                <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="'Q ' + ${venta.total}"></td>
+                <td>
+                    <a th:href="@{/ventas/detalle/{id}(id=${venta.idVenta})}" class="btn-ver">Ver</a>
+                    <a th:href="@{/ventas/eliminar/{id}(id=${venta.idVenta})}" class="btn-eliminar" th:if="${rol == 'ADMIN'}" onclick="return confirm('¿Eliminar esta venta?')">Eliminar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p th:if="${#lists.isEmpty(ventas)}" style="color: white; text-align: center;">No hay ventas registradas.</p>
+    </div>
+</div>
+</body>
+</html>

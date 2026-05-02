@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${producto.idProducto != null} ? 'Editar Producto' : 'Nuevo Producto'">Producto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .glass-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; width: 100%; max-width: 700px; }
+        h1 { color: white; margin-bottom: 30px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { color: white; display: block; margin-bottom: 8px; font-weight: 500; }
+        input, select, textarea { width: 100%; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.9); font-family: 'Poppins', sans-serif; }
+        textarea { resize: vertical; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-back { background: rgba(255,255,255,0.3); margin-bottom: 15px; display: inline-block; padding: 8px 20px; border-radius: 10px; text-decoration: none; color: white; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .error-message { color: #ffcccc; font-size: 0.75rem; margin-top: 5px; }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+    <a href="/admin/productos" class="btn-back">← Volver</a>
+    <h1 th:text="${producto.idProducto != null} ? '✏️ Editar Producto' : '➕ Nuevo Producto'"></h1>
+
+    <form th:action="@{/admin/productos/guardar}" th:object="${producto}" method="post">
+        <input type="hidden" th:field="*{idProducto}">
+        <input type="hidden" th:field="*{estado}">
+
+        <div class="form-group">
+            <label>Nombre del Producto *</label>
+            <input type="text" th:field="*{nombreProducto}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea th:field="*{descripcion}" rows="3" placeholder="Descripción del producto"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Precio *</label>
+                <input type="number" step="0.01" th:field="*{precio}" required>
+            </div>
+            <div class="form-group">
+                <label>Stock *</label>
+                <input type="number" th:field="*{stock}" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Stock Mínimo</label>
+                <input type="number" th:field="*{stockMinimo}">
+            </div>
+            <div class="form-group">
+                <label>Categoría *</label>
+                <select th:field="*{categoriasIdCategoria}" required>
+                    <option value="">Seleccionar categoría</option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.nombreCategoria}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Proveedor *</label>
+            <select th:field="*{proveedoresIdProveedor}" required>
+                <option value="">Seleccionar proveedor</option>
+                <option th:each="prov : ${proveedores}" th:value="${prov.idProveedor}" th:text="${prov.nombreProveedor}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn">Guardar Producto</button>
+    </form>
+</div>
+</body>
+</html>

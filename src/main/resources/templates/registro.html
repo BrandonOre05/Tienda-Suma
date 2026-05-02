@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Cliente - TiendaSuma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group-full {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            background: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.9);
+            color: white;
+        }
+
+        .error-message {
+            color: #ffcccc;
+            font-size: 0.75rem;
+            margin-top: 5px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+        }
+
+        .login-link a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+    <a th:href="@{/login}" class="btn btn-back" style="display: inline-block; width: auto; padding: 8px 20px;">← Volver</a>
+    <h1>Registro de Cliente</h1>
+    <p class="subtitle">Crea tu cuenta para empezar a comprar</p>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/registro}" th:object="${registerClienteDTO}" method="post">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nombre *</label>
+                <input type="text" th:field="*{nombre}" placeholder="Juan" required>
+                <div th:if="${#fields.hasErrors('nombre')}" class="error-message" th:errors="*{nombre}"></div>
+            </div>
+            <div class="form-group">
+                <label>Apellido *</label>
+                <input type="text" th:field="*{apellido}" placeholder="Pérez" required>
+                <div th:if="${#fields.hasErrors('apellido')}" class="error-message" th:errors="*{apellido}"></div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" th:field="*{email}" placeholder="correo@ejemplo.com" required>
+                <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" th:field="*{telefono}" placeholder="12345678">
+                <div th:if="${#fields.hasErrors('telefono')}" class="error-message" th:errors="*{telefono}"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" th:field="*{direccion}" placeholder="Tu dirección">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Contraseña *</label>
+                <input type="password" th:field="*{password}" placeholder="Mínimo 8 caracteres" required>
+                <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
+            </div>
+            <div class="form-group">
+                <label>Confirmar Contraseña *</label>
+                <input type="password" th:field="*{confirmPassword}" placeholder="Repite tu contraseña" required>
+                <div th:if="${#fields.hasErrors('confirmPassword')}" class="error-message" th:errors="*{confirmPassword}"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Registrarse</button>
+    </form>
+
+    <div class="login-link">
+        <p>¿Ya tienes cuenta? <a th:href="@{/login}">Inicia Sesión</a></p>
+    </div>
+</div>
+</body>
+</html>
